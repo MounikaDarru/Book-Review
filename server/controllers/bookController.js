@@ -11,17 +11,39 @@ exports.getBooks = async (req, res) => {
   }
 };
 
+exports.searchBooks = async (req, res) => {
+  try {
+    const query = req.query.q || "";
+    const regex = new RegExp(query, "i"); // case-insensitive
+
+    const books = await Book.find({
+      $or: [
+        { title: regex },
+        { author: regex },
+        { description: regex }
+      ]
+    });
+
+    res.json(books);
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Failed to search books" });
+  }
+};
+
 // @desc Get single book
 // @route GET /api/books/:id
 exports.getBookById = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
     if (!book) return res.status(404).json({ error: "Book not found" });
-    res.json(book);
+
+    res.status(200).json(book);
   } catch (err) {
-    res.status(500).json({ error: "Error fetching book" });
+    res.status(500).json({ error: "Failed to fetch book", message: err.message });
   }
 };
+
 
 // @desc Add new book (admin only for now)
 // @route POST /api/books

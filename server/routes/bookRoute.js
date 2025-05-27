@@ -2,17 +2,15 @@ const express = require("express");
 const router = express.Router();
 const {
   getBooks,
+  searchBooks,
   getBookById,
   createBook
 } = require("../controllers/bookController");
+const { auth, admin } = require("../middleware/authMiddleware");
 
-// GET /api/books
 router.get("/", getBooks);
-
-// GET /api/books/:id
+router.get("/search", searchBooks);
 router.get("/:id", getBookById);
-
-// POST /api/books
-router.post("/", createBook); // Later, add admin auth middleware
+router.post("/", auth, admin, createBook);
 
 module.exports = router;

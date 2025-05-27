@@ -4,21 +4,41 @@ const Review = require("../models/Review");
 exports.getReviews = async (req, res) => {
   try {
     const bookId = req.query.bookId;
-    const reviews = await Review.find(bookId ? { bookId } : {});
+    const reviews = await Review.find(bookId ? { book: bookId } : {}).populate('user', 'name');
     res.json(reviews);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch reviews" });
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
 
 // POST /api/reviews
 exports.createReview = async (req, res) => {
   try {
-    const { userId, bookId, rating, comment } = req.body;
-    const review = new Review({ userId, bookId, rating, comment });
+    const { rating, comment } = req.body;
+    
+    // Basic validation
+    if (!rating || !comment) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const review = new Review({
+      user: req.user.id,
+      book: req.body.book,
+      rating,
+      comment
+    });
+
     await review.save();
     res.status(201).json(review);
-  } catch (err) {
-    res.status(400).json({ error: "Failed to submit review" });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
+

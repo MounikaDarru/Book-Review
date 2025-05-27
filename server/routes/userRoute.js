@@ -4,8 +4,10 @@ const {
   getUserProfile,
   updateUserProfile
 } = require("../controllers/userController");
+const { auth } = require("../middleware/authMiddleware");
 
-router.get("/:id", getUserProfile);
-router.put("/:id", updateUserProfile);
+router.get('/profile', auth, getUserProfile);
+router.put('/:id', auth, updateUserProfile);
+
 
 module.exports = router;

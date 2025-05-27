@@ -1,11 +1,32 @@
 const mongoose = require("mongoose");
 
 const reviewSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-  comment: String,
-  createdAt: { type: Date, default: Date.now }
+  book: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Book",
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+  comment: {
+    type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
+
+// Prevent duplicate reviews per user-book
+reviewSchema.index({ user: 1, book: 1 }, { unique: true });
 
 module.exports = mongoose.model("Review", reviewSchema);

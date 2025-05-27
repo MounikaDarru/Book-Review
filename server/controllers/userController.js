@@ -1,27 +1,29 @@
 const User = require("../models/User");
 
-// GET /api/users/:id
 exports.getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
+    res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch user" });
+    res.status(500).json({ error: "Failed to fetch user", message: err.message });
   }
 };
 
-// PUT /api/users/:id
 exports.updateUserProfile = async (req, res) => {
   try {
-    const { name, bio } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { name, bio },
-      { new: true }
-    ).select("-password");
-    res.json(updatedUser);
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ error: "You can't update another user's profile" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    }).select("-password");
+
+    res.status(200).json(updatedUser);
   } catch (err) {
-    res.status(400).json({ error: "Failed to update user" });
+    res.status(500).json({ error: "Failed to update user", message: err.message });
   }
 };
+
+
