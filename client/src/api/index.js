@@ -9,7 +9,7 @@ const BASE_URL = process.env.REACT_APP_API_URL;
 // });
 
 const API = axios.create({
-  baseURL: BASE_URL,
+  baseURL: `${BASE_URL}/api`
 });
 
 // Request interceptor for adding auth token
