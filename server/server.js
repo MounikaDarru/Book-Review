@@ -12,10 +12,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const cors = require('cors');
+
 app.use(cors({
-  origin: ['https://myassignments-bookreview.netlify.app'],
+  origin: ['http://localhost:3000', 'https://myassignments-bookreview.netlify.app'],
   credentials: true
 }));
+
 app.use(express.json());
 
 app.use("/api/books", bookRoute);
